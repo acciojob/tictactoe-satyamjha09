@@ -71,4 +71,3 @@ document.getElementById("reset").addEventListener("click", () => {
     });
     document.querySelector(".message").textContent = "Enter player names to start!";
 });
-
