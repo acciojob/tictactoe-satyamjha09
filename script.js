@@ -25,9 +25,9 @@ function cellClick(event) {
     let cell = event.target;
     let cellIndex = cell.id - 1;
 
-    if (board[cellIndex] === "") {
-        board[cellIndex] = currentPlayer === player1 ? "X" : "O";
-        cell.textContent = board[cellIndex];
+    if (!board[cellIndex]) {  
+        board[cellIndex] = currentPlayer === player1 ? "X" : "O";  
+        cell.textContent = board[cellIndex];  // Ensure UI updates
 
         if (checkWin()) {
             document.querySelector(".message").textContent = `${currentPlayer} congratulations you won!`;
