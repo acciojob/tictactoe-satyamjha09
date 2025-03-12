@@ -1,25 +1,20 @@
-document.getElementById("submit").addEventListener("click", startGame);
-
+let board = Array(9).fill(null);
+let currentPlayer = "Player1";
 let player1 = "";
 let player2 = "";
-let currentPlayer = "";
-let board = ["", "", "", "", "", "", "", "", ""];
 
-function startGame() {
+// Start Game
+document.getElementById("submit").addEventListener("click", () => {
     player1 = document.getElementById("player1").value || "Player 1";
     player2 = document.getElementById("player2").value || "Player 2";
-
-    document.getElementById("player-form").style.display = "none";
-    document.getElementById("game").style.display = "block";
-
     currentPlayer = player1;
-    document.querySelector(".message").textContent = `${currentPlayer}, you're up`;
+    document.querySelector(".message").textContent = `${currentPlayer}, you're up!`;
+});
 
-    document.querySelectorAll(".cell").forEach(cell => {
-        cell.textContent = "";
-        cell.addEventListener("click", cellClick, { once: true });
-    });
-}
+// Handle Cell Click
+document.querySelectorAll(".cell").forEach(cell => {
+    cell.addEventListener("click", cellClick);
+});
 
 function cellClick(event) {
     let cell = event.target;
@@ -27,11 +22,17 @@ function cellClick(event) {
 
     if (!board[cellIndex]) {
         board[cellIndex] = currentPlayer === player1 ? "X" : "O";
-        cell.textContent = board[cellIndex];  // Ensure UI updates
+        cell.textContent = board[cellIndex];
+        cell.classList.add("taken");
 
         if (checkWin()) {
             document.querySelector(".message").textContent = `${currentPlayer} congratulations you won!`;
             disableBoard();
+            return;
+        }
+
+        if (!board.includes(null)) {
+            document.querySelector(".message").textContent = "It's a draw!";
             return;
         }
 
@@ -40,12 +41,12 @@ function cellClick(event) {
     }
 }
 
-
+// Check Win Conditions
 function checkWin() {
     const winPatterns = [
-        [0, 1, 2], [3, 4, 5], [6, 7, 8], 
-        [0, 3, 6], [1, 4, 7], [2, 5, 8], 
-        [0, 4, 8], [2, 4, 6]
+        [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+        [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+        [0, 4, 8], [2, 4, 6]             // Diagonals
     ];
 
     return winPatterns.some(pattern => {
@@ -54,7 +55,20 @@ function checkWin() {
     });
 }
 
+// Disable Board After Win
 function disableBoard() {
-    document.querySelectorAll(".cell").forEach(cell => cell.removeEventListener("click", cellClick));
+    document.querySelectorAll(".cell").forEach(cell => {
+        cell.classList.add("taken");
+    });
 }
+
+// Reset Game
+document.getElementById("reset").addEventListener("click", () => {
+    board.fill(null);
+    document.querySelectorAll(".cell").forEach(cell => {
+        cell.textContent = "";
+        cell.classList.remove("taken");
+    });
+    document.querySelector(".message").textContent = "Enter player names to start!";
+});
 
