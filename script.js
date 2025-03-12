@@ -23,10 +23,10 @@ function startGame() {
 
 function cellClick(event) {
     let cell = event.target;
-    let cellIndex = cell.id - 1;
+    let cellIndex = parseInt(cell.id) - 1;
 
-    if (!board[cellIndex]) {  
-        board[cellIndex] = currentPlayer === player1 ? "X" : "O";  
+    if (!board[cellIndex]) {
+        board[cellIndex] = currentPlayer === player1 ? "X" : "O";
         cell.textContent = board[cellIndex];  // Ensure UI updates
 
         if (checkWin()) {
@@ -39,6 +39,7 @@ function cellClick(event) {
         document.querySelector(".message").textContent = `${currentPlayer}, you're up`;
     }
 }
+
 
 function checkWin() {
     const winPatterns = [
