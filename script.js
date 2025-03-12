@@ -1,74 +1,59 @@
-const submitBtn = document.getElementById("submit");
-const restartBtn = document.getElementById("restart");
-const player1Input = document.getElementById("player-1");
-const player2Input = document.getElementById("player-2");
-const playerInputDiv = document.getElementById("player-input");
-const gameBoardDiv = document.getElementById("game-board");
-const messageDiv = document.querySelector(".message");
-const cells = document.querySelectorAll(".cell");
+document.getElementById("submit").addEventListener("click", startGame);
 
-let player1, player2;
-let currentPlayer;
+let player1 = "";
+let player2 = "";
+let currentPlayer = "";
 let board = ["", "", "", "", "", "", "", "", ""];
-let gameActive = true;
 
-// Winning Combinations
-const winningCombinations = [
-    [0, 1, 2], [3, 4, 5], [6, 7, 8],
-    [0, 3, 6], [1, 4, 7], [2, 5, 8],
-    [0, 4, 8], [2, 4, 6]
-];
+function startGame() {
+    player1 = document.getElementById("player1").value || "Player 1";
+    player2 = document.getElementById("player2").value || "Player 2";
 
-// Start Game after entering player names
-submitBtn.addEventListener("click", () => {
-    player1 = player1Input.value.trim() || "Player 1";
-    player2 = player2Input.value.trim() || "Player 2";
+    document.getElementById("player-form").style.display = "none";
+    document.getElementById("game").style.display = "block";
+
     currentPlayer = player1;
+    document.querySelector(".message").textContent = `${currentPlayer}, you're up`;
 
-    playerInputDiv.style.display = "none";
-    gameBoardDiv.style.display = "block";
-    messageDiv.textContent = `${currentPlayer}, you're up!`;
-});
-
-// Cell Click Event
-cells.forEach((cell, index) => {
-    cell.addEventListener("click", () => {
-        if (!board[index] && gameActive) {
-            board[index] = currentPlayer === player1 ? "X" : "O";
-            cell.textContent = board[index];
-
-            if (checkWin()) {
-                messageDiv.textContent = `${currentPlayer}, congratulations you won!`;
-                gameActive = false;
-                return;
-            }
-
-            if (board.every(cell => cell !== "")) {
-                messageDiv.textContent = "It's a draw!";
-                gameActive = false;
-                return;
-            }
-
-            currentPlayer = currentPlayer === player1 ? player2 : player1;
-            messageDiv.textContent = `${currentPlayer}, you're up!`;
-        }
+    document.querySelectorAll(".cell").forEach(cell => {
+        cell.textContent = "";
+        cell.addEventListener("click", cellClick, { once: true });
     });
-});
+}
 
-// Check Win Function
+function cellClick(event) {
+    let cell = event.target;
+    let cellIndex = cell.id - 1;
+
+    if (board[cellIndex] === "") {
+        board[cellIndex] = currentPlayer === player1 ? "X" : "O";
+        cell.textContent = board[cellIndex];
+
+        if (checkWin()) {
+            document.querySelector(".message").textContent = `${currentPlayer} congratulations you won!`;
+            disableBoard();
+            return;
+        }
+
+        currentPlayer = currentPlayer === player1 ? player2 : player1;
+        document.querySelector(".message").textContent = `${currentPlayer}, you're up`;
+    }
+}
+
 function checkWin() {
-    return winningCombinations.some(combination => {
-        const [a, b, c] = combination;
+    const winPatterns = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8], 
+        [0, 3, 6], [1, 4, 7], [2, 5, 8], 
+        [0, 4, 8], [2, 4, 6]
+    ];
+
+    return winPatterns.some(pattern => {
+        const [a, b, c] = pattern;
         return board[a] && board[a] === board[b] && board[a] === board[c];
     });
 }
 
-// Restart Game
-restartBtn.addEventListener("click", () => {
-    board.fill("");
-    cells.forEach(cell => cell.textContent = "");
-    currentPlayer = player1;
-    gameActive = true;
-    messageDiv.textContent = `${currentPlayer}, you're up!`;
-});
+function disableBoard() {
+    document.querySelectorAll(".cell").forEach(cell => cell.removeEventListener("click", cellClick));
+}
 
